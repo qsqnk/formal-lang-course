@@ -5,11 +5,11 @@ import networkx.drawing.nx_pydot
 from networkx import MultiDiGraph
 
 __all__ = [
-    'GraphInfo',
-    'graph_info_of',
-    'build_two_cycle_labeled_graph',
-    'load_graph',
-    'save_graph'
+    "GraphInfo",
+    "graph_info_of",
+    "build_two_cycle_labeled_graph",
+    "load_graph",
+    "save_graph",
 ]
 
 from typing.io import IO
@@ -22,9 +22,7 @@ class GraphInfo(NamedTuple):
 
 
 def graph_info_of(graph: MultiDiGraph) -> GraphInfo:
-    edge_labels = set(
-        label for _, _, label in graph.edges(data='label') if label
-    )
+    edge_labels = set(label for _, _, label in graph.edges(data="label") if label)
     return GraphInfo(
         number_of_nodes=graph.number_of_nodes(),
         number_of_edges=graph.number_of_edges(),
@@ -33,9 +31,9 @@ def graph_info_of(graph: MultiDiGraph) -> GraphInfo:
 
 
 def build_two_cycle_labeled_graph(
-        size_of_first_cycle: int,
-        size_of_second_cycle: int,
-        edge_labels: Tuple[str, str],
+    size_of_first_cycle: int,
+    size_of_second_cycle: int,
+    edge_labels: Tuple[str, str],
 ) -> MultiDiGraph:
     return cfpq_data.labeled_two_cycles_graph(
         n=size_of_first_cycle,

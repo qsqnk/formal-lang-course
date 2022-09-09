@@ -10,11 +10,11 @@ def test_graph_save():
     graph = build_two_cycle_labeled_graph(
         size_of_first_cycle=42,
         size_of_second_cycle=29,
-        edge_labels=('x', 'y'),
+        edge_labels=("x", "y"),
     )
-    save_graph(graph, os.sep.join([test_dir_path, 'actual_graph.dot']))
+    save_graph(graph, os.sep.join([test_dir_path, "actual_graph.dot"]))
     assert filecmp.cmp(
-        os.sep.join([test_dir_path, 'actual_graph.dot']),
-        os.sep.join([test_dir_path, 'expected_graph.dot']),
+        os.sep.join([test_dir_path, "actual_graph.dot"]),
+        os.sep.join([test_dir_path, "expected_graph.dot"]),
     )
-    os.remove(os.sep.join([test_dir_path, 'actual_graph.dot']))
+    os.remove(os.sep.join([test_dir_path, "actual_graph.dot"]))
