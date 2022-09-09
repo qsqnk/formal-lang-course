@@ -6,7 +6,7 @@ from project.graph_utils import *
 def test_ring_graph_info():
     ring = cfpq_data.labeled_cycle_graph(
         n=3,
-        label="a",
+        label="x",
     )
     ring_info = graph_info_of(ring)
     assert ring_info == GraphInfo(
