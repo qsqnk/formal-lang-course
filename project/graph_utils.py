@@ -57,8 +57,7 @@ def create_and_save_two_cycle_labeled_graph(
 
     Returns
     -------
-    graph : MultiDiGraph
-        Created graph
+    None
     """
     graph = create_two_cycle_labeled_graph(
         size_of_first_cycle=size_of_first_cycle,
