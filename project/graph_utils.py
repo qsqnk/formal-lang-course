@@ -7,30 +7,82 @@ from typing.io import IO
 
 __all__ = [
     "GraphInfo",
+    "create_and_save_two_cycle_labeled_graph",
+    "graph_info_by_name",
     "graph_info_of",
-    "build_two_cycle_labeled_graph",
+    "create_two_cycle_labeled_graph",
     "load_graph",
     "save_graph",
 ]
 
 
 class GraphInfo(NamedTuple):
-    """Class represents holder of general information about graph.
+    """Class represents holder of general information about graph
 
     Attributes
     ----------
 
     number_of_nodes : int
-        Number of nodes stored in the graph.
+        Number of nodes stored in the graph
     number_of_edges : int
-        Number of edges stored in the graph.
+        Number of edges stored in the graph
     edge_labels : Set[str]
-        All labels of edges.
+        All labels of edges
     """
 
     number_of_nodes: int
     number_of_edges: int
     edge_labels: Set[str]
+
+
+def create_and_save_two_cycle_labeled_graph(
+    size_of_first_cycle: int,
+    size_of_second_cycle: int,
+    edge_labels: Tuple[str, str],
+    file: Union[str, IO],
+) -> None:
+    """Builds labeled graph with two cycles and saves into file
+
+    Parameters
+    ----------
+    size_of_first_cycle : int
+        Count of nodes in the first cycle without common node
+    size_of_second_cycle : int
+        Count of nodes in the second cycle without common node
+    edge_labels : Tuple[str, str]
+        Edge labels of graph
+    file : Union[str, IO]
+        The name of file or file itself
+
+
+    Returns
+    -------
+    graph : MultiDiGraph
+        Created graph
+    """
+    graph = create_two_cycle_labeled_graph(
+        size_of_first_cycle=size_of_first_cycle,
+        size_of_second_cycle=size_of_second_cycle,
+        edge_labels=edge_labels,
+    )
+    save_graph(graph, file)
+
+
+def graph_info_by_name(graph_name: str) -> GraphInfo:
+    """Loads graph by name from dataset and calculates info about it
+
+    Parameters
+    ----------
+    graph_name : str
+        Name of graph to be processed
+
+    Returns
+    -------
+    graph_info : GraphInfo
+        Info about graph
+    """
+    graph = load_graph(graph_name)
+    return graph_info_of(graph)
 
 
 def graph_info_of(graph: MultiDiGraph) -> GraphInfo:
@@ -54,12 +106,12 @@ def graph_info_of(graph: MultiDiGraph) -> GraphInfo:
     )
 
 
-def build_two_cycle_labeled_graph(
+def create_two_cycle_labeled_graph(
     size_of_first_cycle: int,
     size_of_second_cycle: int,
     edge_labels: Tuple[str, str],
 ) -> MultiDiGraph:
-    """Builds labeled graph with two cycles.
+    """Builds labeled graph with two cycles
 
     Parameters
     ----------
@@ -84,7 +136,7 @@ def build_two_cycle_labeled_graph(
 
 
 def load_graph(graph_name: str) -> MultiDiGraph:
-    """Loads a graph by name.
+    """Loads a graph by name
 
     Parameters
     ----------
@@ -94,7 +146,7 @@ def load_graph(graph_name: str) -> MultiDiGraph:
     Returns
     -------
     graph : MultiDiGraph
-        Loaded graph.
+        Loaded graph
     """
     graph_path = cfpq_data.download(graph_name)
     graph = cfpq_data.graph_from_csv(graph_path)
@@ -102,7 +154,7 @@ def load_graph(graph_name: str) -> MultiDiGraph:
 
 
 def save_graph(graph: MultiDiGraph, file: Union[str, IO]) -> None:
-    """Saves a graph into a file.
+    """Saves a graph into a file
 
     Parameters
     ----------

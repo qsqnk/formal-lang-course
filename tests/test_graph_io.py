@@ -7,7 +7,7 @@ test_dir_path = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_graph_save():
-    graph = build_two_cycle_labeled_graph(
+    graph = create_two_cycle_labeled_graph(
         size_of_first_cycle=42,
         size_of_second_cycle=29,
         edge_labels=("x", "y"),
