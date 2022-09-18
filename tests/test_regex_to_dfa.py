@@ -31,17 +31,18 @@ def test_or_regex_dfa_is_correct():
 
 
 def test_kleene_star_regex_dfa_is_correct():
-    regex = Regex("(ab)*c")
+    regex = Regex("(a b)*c")
     regex_dfa = regex_to_min_dfa(regex)
 
     expected_dfa = DeterministicFiniteAutomaton()
     expected_dfa.add_transitions(
         [
-            (0, Symbol("ab"), 0),
-            (0, Symbol("c"), 1),
+            (0, Symbol("a"), 1),
+            (1, Symbol("b"), 0),
+            (0, Symbol("c"), 2),
         ]
     )
     expected_dfa.add_start_state(State(0))
-    expected_dfa.add_final_state(State(1))
+    expected_dfa.add_final_state(State(2))
 
     assert check_automatons_are_equivalent(regex_dfa, expected_dfa)
