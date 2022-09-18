@@ -3,7 +3,6 @@ from networkx.algorithms.isomorphism import (
     categorical_node_match,
     categorical_multiedge_match,
 )
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton
 
 
 def check_graphs_are_isomorphic(first_graph, second_graph):
@@ -24,7 +23,7 @@ def check_automatons_are_equivalent(first_automaton, second_automaton):
     )
 
 
-def automaton_to_graph(automaton: DeterministicFiniteAutomaton):
+def automaton_to_graph(automaton):
     graph = MultiDiGraph()
     for state_from, symbol, state_to in automaton:
         graph.add_edge(
