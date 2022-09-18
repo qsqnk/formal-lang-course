@@ -11,9 +11,9 @@ from pyformlang.finite_automaton import (
     EpsilonNFA,
     State,
     Epsilon,
+    Symbol,
 )
 from pyformlang.regular_expression import Regex
-from pyformlang.regular_expression.regex_objects import Symbol
 
 
 def regex_to_min_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
@@ -44,10 +44,10 @@ def graph_to_epsilon_nfa(
     graph : MultiDiGraph
         Graph to be converted
     start_states:
-        Set of start states in NFA
+        Set of nodes of the graph that will be treated as start states in NFA
         If parameter is None then each graph node is considered the start state
     final_states:
-        Set of final states in NFA
+        Set of nodes of the graph that will be treated as final states in NFA
         If parameter is None then each graph node is considered the final state
 
     Returns
@@ -60,19 +60,19 @@ def graph_to_epsilon_nfa(
         epsilon_nfa.add_transition(
             s_from=State(node_from),
             s_to=State(node_to),
-            symb_by=Symbol(data.get("label", Epsilon)),
+            symb_by=Epsilon() if not data["label"] else Symbol(data["label"]),
         )
 
     set_of_all_nodes = set(graph.nodes)
 
     if start_states is None:
         start_states = set_of_all_nodes
-    for state in start_states:
+    for state in map(State, start_states):
         epsilon_nfa.add_start_state(state)
 
     if final_states is None:
         final_states = set_of_all_nodes
-    for state in final_states:
+    for state in map(State, final_states):
         epsilon_nfa.add_final_state(state)
 
     return epsilon_nfa
