@@ -1,5 +1,5 @@
 __all__ = [
-    "BoolMatrix",
+    "BoolMatrixAutomaton",
 ]
 
 from typing import Dict, Set, Any
@@ -8,7 +8,7 @@ from pyformlang.finite_automaton import State, EpsilonNFA
 from scipy.sparse import dok_matrix, kron
 
 
-class BoolMatrix:
+class BoolMatrixAutomaton:
     # Only for internal use
     def __init__(
         self,
@@ -22,7 +22,7 @@ class BoolMatrix:
         self.final_states = final_states
         self.b_mtx = b_mtx
 
-    def __and__(self, other: "BoolMatrix") -> "BoolMatrix":
+    def __and__(self, other: "BoolMatrixAutomaton") -> "BoolMatrixAutomaton":
         inter_labels = self.b_mtx.keys() & other.b_mtx.keys()
         inter_b_mtx = {
             label: kron(self.b_mtx[label], other.b_mtx[label]) for label in inter_labels
@@ -45,7 +45,7 @@ class BoolMatrix:
                     and other_state in other.final_states
                 ):
                     inter_final_states.add(state)
-        return BoolMatrix(
+        return BoolMatrixAutomaton(
             state_to_idx=inter_state_to_idx,
             start_states=inter_start_states,
             final_states=inter_final_states,
@@ -66,7 +66,7 @@ class BoolMatrix:
         return transitive_closure
 
     @classmethod
-    def from_nfa(cls, nfa: EpsilonNFA) -> "BoolMatrix":
+    def from_nfa(cls, nfa: EpsilonNFA) -> "BoolMatrixAutomaton":
         state_to_idx = {state: idx for idx, state in enumerate(nfa.states)}
         return cls(
             state_to_idx=state_to_idx,
