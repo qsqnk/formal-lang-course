@@ -1,5 +1,6 @@
 import pytest
 from networkx import MultiDiGraph
+from pyformlang.regular_expression import Regex
 
 from project.rpq import *
 

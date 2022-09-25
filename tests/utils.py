@@ -1,10 +1,8 @@
-import numpy as np
 from networkx import is_isomorphic, MultiDiGraph
 from networkx.algorithms.isomorphism import (
     categorical_node_match,
     categorical_multiedge_match,
 )
-from scipy.sparse import dok_matrix
 
 
 def check_graphs_are_isomorphic(first_graph, second_graph):

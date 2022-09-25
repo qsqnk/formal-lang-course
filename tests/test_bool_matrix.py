@@ -1,7 +1,7 @@
 import pytest
 from pyformlang.finite_automaton import EpsilonNFA, State, Symbol
 
-from project import BoolMatrixAutomaton
+from project.matrix_utils import *
 
 
 @pytest.fixture
