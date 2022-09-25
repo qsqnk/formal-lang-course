@@ -2,7 +2,7 @@ __all__ = [
     "BoolMatrixAutomaton",
 ]
 
-from typing import Dict, Set, Any
+from typing import Dict, Set, Any, Optional
 
 from pyformlang.finite_automaton import State, EpsilonNFA
 from scipy.sparse import dok_matrix, kron
@@ -17,12 +17,38 @@ class BoolMatrixAutomaton:
         final_states: Set[State],
         b_mtx: Dict[Any, dok_matrix],
     ):
+        """Class represents bool matrix representation of automaton
+
+        Attributes
+        ----------
+
+        state_to_idx : Dict[State, int]
+            Mapping from states to indices in boolean matrix
+        start_states : Set[State]
+            Set of start states
+        final_states : Set[State]
+            Set of final states
+        b_mtx: Dict[Any, dok_matrix]
+            Mapping from edge label to boolean adjacency matrix
+        """
         self.state_to_idx = state_to_idx
         self.start_states = start_states
         self.final_states = final_states
         self.b_mtx = b_mtx
 
     def __and__(self, other: "BoolMatrixAutomaton") -> "BoolMatrixAutomaton":
+        """Calculates intersection of two automatons represented by bool matrices
+
+        Parameters
+        ----------
+        other : BoolMatrixAutomaton
+            The automaton with which intersection will be calculated
+
+        Returns
+        -------
+        intersection : BoolMatrixAutomaton
+            Intersection of two automatons represented by bool matrix
+        """
         inter_labels = self.b_mtx.keys() & other.b_mtx.keys()
         inter_b_mtx = {
             label: kron(self.b_mtx[label], other.b_mtx[label]) for label in inter_labels
@@ -53,6 +79,13 @@ class BoolMatrixAutomaton:
         )
 
     def transitive_closure(self) -> dok_matrix:
+        """Calculates transitive closure
+
+        Returns
+        -------
+        transitive_closure : dok_matrix
+            Transitive closure represented by sparse matrix
+        """
         transitive_closure = sum(
             self.b_mtx.values(),
             start=dok_matrix((len(self.state_to_idx), len(self.state_to_idx))),
@@ -67,6 +100,18 @@ class BoolMatrixAutomaton:
 
     @classmethod
     def from_nfa(cls, nfa: EpsilonNFA) -> "BoolMatrixAutomaton":
+        """Builds bool matrix from nfa
+
+        Parameters
+        ----------
+        nfa : EpsilonNFA
+            NFA to be converted to bool matrix
+
+        Returns
+        -------
+        bool_matrix : BoolMatrixAutomaton
+            Bool matrix representation of automaton
+        """
         state_to_idx = {state: idx for idx, state in enumerate(nfa.states)}
         return cls(
             state_to_idx=state_to_idx,
@@ -79,6 +124,12 @@ class BoolMatrixAutomaton:
         )
 
     def to_nfa(self) -> EpsilonNFA:
+        """Converts bool matrix representation of automaton to epsilon nfa
+        Returns
+        -------
+        nfa : EpsilonNFA
+            Created nfa
+        """
         nfa = EpsilonNFA()
         for label, dok_mtx in self.b_mtx.items():
             mtx_as_arr = dok_mtx.toarray()
@@ -100,12 +151,29 @@ class BoolMatrixAutomaton:
     def _b_mtx_from_nfa(
         nfa: EpsilonNFA, state_to_idx: Dict[State, int]
     ) -> Dict[Any, dok_matrix]:
+        """Utility method for creating mapping from labels to adj bool matrix
+
+        Parameters
+        ----------
+        nfa : EpsilonNFA
+            Epsilon NFA from which mapping will be created
+        state_to_idx: Dict[State, int]
+            Mapping from states to indices in boolean matrix
+
+        Returns
+        -------
+        b_mtx : Dict[State, int]
+            Mapping from labels to adj bool matrix
+        """
         b_mtx = dict()
         state_from_to_transition = nfa.to_dict()
         for label in nfa.symbols:
             dok_mtx = dok_matrix((len(nfa.states), len(nfa.states)), dtype=bool)
             for state_from, transitions in state_from_to_transition.items():
-                for state_to in transitions.get(label, {}):
+                states_to = transitions.get(label, set())
+                if not isinstance(states_to, set):
+                    states_to = {states_to}
+                for state_to in states_to:
                     dok_mtx[state_to_idx[state_from], state_to_idx[state_to]] = True
             b_mtx[label] = dok_mtx
         return b_mtx

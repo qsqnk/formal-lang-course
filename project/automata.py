@@ -50,7 +50,7 @@ def graph_to_epsilon_nfa(
         If parameter is None then each graph node is considered the start state
     final_states : Optional[Set]
         Set of nodes of the graph that will be treated as final states in NFA
-        If parameter is None then each graph node is considered the final state
+        If parameter is None then each EpsilonNFAgraph node is considered the final state
 
     Returns
     -------
@@ -81,8 +81,7 @@ def graph_to_epsilon_nfa(
 
 
 def intersect(first_automaton: EpsilonNFA, second_automaton: EpsilonNFA) -> EpsilonNFA:
-    """Calculates intersection of two automatons using tensor multiplication of their bool matrices
-
+    """Calculates intersection of two automatons using Kronecker multiplication of their bool matrices
 
     Parameters
     ----------
