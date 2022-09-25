@@ -45,7 +45,6 @@ def test_bool_matrix_from_non_empty_nfa_states(non_empty_nfa):
 
 def test_bool_matrix_from_non_empty_nfa_matrix(non_empty_nfa):
     mtx = BoolMatrixAutomaton.from_nfa(non_empty_nfa)
-    print(mtx.b_mtx["a"].toarray().tolist())
     assert all(
         (
             [[True, False], [False, False]] == mtx.b_mtx["a"].toarray().tolist(),
