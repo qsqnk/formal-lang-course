@@ -1,6 +1,7 @@
 __all__ = [
     "regex_to_min_dfa",
     "graph_to_epsilon_nfa",
+    "intersect",
 ]
 
 from typing import Set, Optional
