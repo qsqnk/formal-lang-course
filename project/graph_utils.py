@@ -3,7 +3,6 @@ from typing import NamedTuple, Set, Tuple, Union
 import cfpq_data
 import networkx.drawing.nx_pydot
 from networkx import MultiDiGraph
-from pyformlang.finite_automaton import EpsilonNFA
 from typing.io import IO
 
 __all__ = [
@@ -15,8 +14,6 @@ __all__ = [
     "load_graph",
     "save_graph",
 ]
-
-from project import BoolMatrixAutomaton
 
 
 class GraphInfo(NamedTuple):
@@ -170,25 +167,3 @@ def save_graph(graph: MultiDiGraph, file: Union[str, IO]) -> None:
     None
     """
     networkx.drawing.nx_pydot.write_dot(graph, file)
-
-
-def intersect(first_automaton: EpsilonNFA, second_automaton: EpsilonNFA) -> EpsilonNFA:
-    """Calculates intersection of two automatons using tensor multiplication of their bool matrices
-
-
-    Parameters
-    ----------
-    first_automaton : EpsilonNFA
-        First graph
-    second_automaton : EpsilonNFA
-        Second graph
-
-    Returns
-    -------
-    intersected_automaton: EpsilonNFA
-        Intersection of first_automaton and second_automaton
-    """
-    first_graph_mtx = BoolMatrixAutomaton.from_nfa(first_automaton)
-    second_graph_mtx = BoolMatrixAutomaton.from_nfa(second_automaton)
-    intersected = first_graph_mtx & second_graph_mtx
-    return intersected.to_nfa()
