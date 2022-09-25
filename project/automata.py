@@ -15,7 +15,7 @@ from pyformlang.finite_automaton import (
 )
 from pyformlang.regular_expression import Regex
 
-from project import BoolMatrixAutomaton
+from project import matrix_utils
 
 
 def regex_to_min_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
@@ -96,7 +96,7 @@ def intersect(first_automaton: EpsilonNFA, second_automaton: EpsilonNFA) -> Epsi
     intersected_automaton: EpsilonNFA
         Intersection of first_automaton and second_automaton
     """
-    first_graph_mtx = BoolMatrixAutomaton.from_nfa(first_automaton)
-    second_graph_mtx = BoolMatrixAutomaton.from_nfa(second_automaton)
+    first_graph_mtx = matrix_utils.BoolMatrixAutomaton.from_nfa(first_automaton)
+    second_graph_mtx = matrix_utils.BoolMatrixAutomaton.from_nfa(second_automaton)
     intersected = first_graph_mtx & second_graph_mtx
     return intersected.to_nfa()
