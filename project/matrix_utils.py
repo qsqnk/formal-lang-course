@@ -12,9 +12,9 @@ class BoolMatrix:
     # Only for internal use
     def __init__(
         self,
-        state_to_idx: Dict[Any, int],
-        start_states: Set[Any],
-        final_states: Set[Any],
+        state_to_idx: Dict[State, int],
+        start_states: Set[State],
+        final_states: Set[State],
         b_mtx: Dict[Any, dok_matrix],
     ):
         self.state_to_idx = state_to_idx
@@ -32,7 +32,7 @@ class BoolMatrix:
         inter_final_states = set()
         for self_state, self_idx in self.state_to_idx.items():
             for other_state, other_idx in other.state_to_idx.items():
-                state = (self_state, other_state)
+                state = State((self_state.value, other_state.value))
                 idx = self_idx * len(other.state_to_idx) + other_idx
                 inter_state_to_idx[state] = idx
                 if (
@@ -77,6 +77,24 @@ class BoolMatrix:
                 state_to_idx=state_to_idx,
             ),
         )
+
+    def to_nfa(self) -> EpsilonNFA:
+        nfa = EpsilonNFA()
+        for label, dok_mtx in self.b_mtx.items():
+            mtx_as_arr = dok_mtx.toarray()
+            for state_from, i in self.state_to_idx.items():
+                for state_to, j in self.state_to_idx.items():
+                    if mtx_as_arr[i][j]:
+                        nfa.add_transition(
+                            s_from=state_from,
+                            symb_by=label,
+                            s_to=state_to,
+                        )
+        for state in self.start_states:
+            nfa.add_start_state(state)
+        for state in self.final_states:
+            nfa.add_final_state(state)
+        return nfa
 
     @staticmethod
     def _b_mtx_from_nfa(
