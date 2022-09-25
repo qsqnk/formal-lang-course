@@ -12,10 +12,10 @@ __all__ = [
 
 
 def rpq(
-        graph: MultiDiGraph,
-        query: Regex,
-        start_states: Optional[Set],
-        final_states: Optional[Set],
+    graph: MultiDiGraph,
+    query: Regex,
+    start_states: Optional[Set],
+    final_states: Optional[Set],
 ) -> Set[Tuple[Any, Any]]:
     """Executes regular query on graph
 
@@ -57,8 +57,8 @@ def rpq(
     for state_from_idx, state_to_idx in zip(*transitive_closure.nonzero()):
         state_from, state_to = idx_to_state[state_from_idx], idx_to_state[state_to_idx]
         if (
-                state_from in intersection_bool_mtx.start_states
-                and state_to in intersection_bool_mtx.final_states
+            state_from in intersection_bool_mtx.start_states
+            and state_to in intersection_bool_mtx.final_states
         ):
             state_from_graph_value, _ = state_from.value
             state_to_graph_value, _ = state_to.value
