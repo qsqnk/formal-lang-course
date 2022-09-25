@@ -50,7 +50,7 @@ def graph_to_epsilon_nfa(
         If parameter is None then each graph node is considered the start state
     final_states : Optional[Set]
         Set of nodes of the graph that will be treated as final states in NFA
-        If parameter is None then each EpsilonNFAgraph node is considered the final state
+        If parameter is None then each graph node is considered the final state
 
     Returns
     -------
