@@ -1,11 +1,11 @@
-__all__ = [
-    "BoolMatrixAutomaton",
-]
-
 from typing import Dict, Set, Any, Optional
 
 from pyformlang.finite_automaton import State, EpsilonNFA
 from scipy.sparse import dok_matrix, kron
+
+__all__ = [
+    "BoolMatrixAutomaton",
+]
 
 
 class BoolMatrixAutomaton:

@@ -29,8 +29,8 @@ def rpq(
         Set of nodes of the graph that will be treated as start states in NFA
         If parameter is None then each graph node is considered the start state
     final_states: Optional[Set]
-        Set of nodes of the graph that will be treated as start states in NFA
-        If parameter is None then each graph node is considered the start state
+        Set of nodes of the graph that will be treated as final states in NFA
+        If parameter is None then each graph node is considered the final state
 
     Returns
     -------
