@@ -1,4 +1,4 @@
-from typing import Dict, Set, Any
+from typing import Dict, Set, Any, List
 
 from pyformlang.finite_automaton import State, EpsilonNFA
 from scipy.sparse import dok_matrix, kron, bmat, csr_matrix, lil_array, vstack
@@ -219,11 +219,20 @@ class BoolMatrixAutomaton:
         other: "BoolMatrixAutomaton",
         reachable_per_node: bool,
     ) -> Set[Any]:
+        if not self.state_to_idx or not other.state_to_idx:
+            return set()
+
+        ordered_start_states = list(self.start_states)
+
         direct_sum = other._direct_sum(self)
-        front = self._init_sync_bfs_front(other, reachable_per_node)
+        initial_front = self._init_sync_bfs_front(
+            other=other,
+            reachable_per_node=reachable_per_node,
+            ordered_start_states=ordered_start_states,
+        )
+        front = initial_front
         visited = front.copy()
 
-        self_states_num = len(self.state_to_idx)
         other_states_num = len(other.state_to_idx)
 
         while True:
@@ -241,27 +250,27 @@ class BoolMatrixAutomaton:
                         continue
                     row_shift = i // other_states_num * other_states_num
                     new_front_step[row_shift + j, j] = 1
-                    new_front_step[row_shift + j, other_states_num:] += row
-                new_front_step = new_front_step.tocsr()
-
-                visited += new_front_step
-                new_front += new_front_step
+                    new_front_step[[row_shift + j], other_states_num:] += row
+                new_front += new_front_step.tocsr()
 
             for i, j in zip(*new_front.nonzero()):
                 if visited[i, j]:
                     new_front[i, j] = 0
+
+            visited += new_front
+            front = new_front
 
             if visited_nnz == visited.nnz:
                 break
 
         self_idx_to_state = {idx: state for state, idx in self.state_to_idx.items()}
         other_idx_to_state = {idx: state for state, idx in other.state_to_idx.items()}
-        self_idx_to_start_state = {
-            idx: state for idx, state in enumerate(self.start_states)
-        }
 
         result = set()
-        for i, j in zip(*visited.nonzero()):
+        nonzero = set(zip(*visited.nonzero())).difference(
+            set(zip(*initial_front.nonzero()))
+        )
+        for i, j in nonzero:
             if (
                 other_idx_to_state[i % other_states_num] not in other.final_states
                 or j < other_states_num
@@ -273,7 +282,7 @@ class BoolMatrixAutomaton:
             result.add(
                 self_state
                 if not reachable_per_node
-                else (self_idx_to_start_state[i // other_states_num], self_state)
+                else (ordered_start_states[i // other_states_num], self_state)
             )
         return result
 
@@ -281,6 +290,7 @@ class BoolMatrixAutomaton:
         self,
         other: "BoolMatrixAutomaton",
         reachable_per_node: bool,
+        ordered_start_states: List[State],
     ) -> csr_matrix:
         def front_with_self_start_row(self_start_row: lil_array):
             front = lil_array(
@@ -296,7 +306,9 @@ class BoolMatrixAutomaton:
             return front
 
         if reachable_per_node:
-            start_indices = set(self.state_to_idx[state] for state in self.start_states)
+            start_indices = set(
+                self.state_to_idx[state] for state in ordered_start_states
+            )
             return front_with_self_start_row(
                 lil_array(
                     [
@@ -315,7 +327,7 @@ class BoolMatrixAutomaton:
                     ]
                 )
             )
-            for start in self.start_states
+            for start in ordered_start_states
         ]
 
         return (

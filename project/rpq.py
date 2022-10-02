@@ -8,6 +8,8 @@ from project import graph_to_epsilon_nfa, BoolMatrixAutomaton, regex_to_min_dfa
 
 __all__ = [
     "rpq_tensor",
+    "rpq_bfs",
+    "MultipleSourceRpqMode",
 ]
 
 
