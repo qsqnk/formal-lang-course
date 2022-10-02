@@ -1,23 +1,23 @@
-from typing import Set, Optional, Tuple, Any
+import enum
+from typing import Set, Optional, Tuple, Any, Dict
 
 from networkx import MultiDiGraph
-from pyformlang.finite_automaton import State
 from pyformlang.regular_expression import Regex
 
 from project import graph_to_epsilon_nfa, BoolMatrixAutomaton, regex_to_min_dfa
 
 __all__ = [
-    "rpq",
+    "rpq_tensor",
 ]
 
 
-def rpq(
+def rpq_tensor(
     graph: MultiDiGraph,
     query: Regex,
     start_states: Optional[Set],
     final_states: Optional[Set],
 ) -> Set[Tuple[Any, Any]]:
-    """Executes regular query on graph
+    """Executes regular query on graph using tensor multiplication
 
     Parameters
     ----------
@@ -66,3 +66,54 @@ def rpq(
                 (state_from_graph_value, state_to_graph_value),
             )
     return result
+
+
+class MultipleSourceRpqMode(enum.Enum):
+    """Class represents mode of multiple source rpq task
+
+    Values
+    ----------
+
+    FIND_ALL_REACHABLE : MultipleSourceRpqMode
+        Find all reachable nodes from set of start nodes
+    FIND_REACHABLE_FOR_EACH_START_NODE : MultipleSourceRpqMode
+        Find reachable nodes for each start node separately
+    """
+
+    FIND_ALL_REACHABLE = enum.auto()
+    FIND_REACHABLE_FOR_EACH_START_NODE = enum.auto()
+
+
+def rpq_bfs(
+    graph: MultiDiGraph,
+    query: Regex,
+    start_states: Optional[Set],
+    final_states: Optional[Set],
+    mode: MultipleSourceRpqMode,
+) -> Set[Any]:
+    """Executes regular query on graph using multiple source bfs
+
+    Parameters
+    ----------
+    graph : MultiDiGraph
+        The graph on which query will be executed
+    query: Regex
+        Query represented by regular expression
+    start_states: Optional[Set]
+        Set of nodes of the graph that will be treated as start states in NFA
+        If parameter is None then each graph node is considered the start state
+    final_states: Optional[Set]
+        Set of nodes of the graph that will be treated as final states in NFA
+        If parameter is None then each graph node is considered the final state
+    mode: MultipleSourceRpqMode
+        The mode that determines which vertices should be found
+
+    Returns
+    -------
+    result : Set[Any]
+        Result depends on chosen mode
+        if mode is FIND_ALL_REACHABLE -- set of reachable nodes
+        if mode is FIND_REACHABLE_FOR_EACH_START_NODE -- set of tuples (U, V)
+        where U is start node and V is node reachable from U
+    """
+    return None

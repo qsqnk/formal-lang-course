@@ -179,6 +179,18 @@ class BoolMatrixAutomaton:
         return b_mtx
 
     def _direct_sum(self, other: "BoolMatrixAutomaton") -> "BoolMatrixAutomaton":
+        """Calculates direct sum of automatons represented by bool matrix
+
+        Parameters
+        ----------
+        other : BoolMatrixAutomaton
+            The matrix with which sum will be calculated
+
+        Returns
+        -------
+        direct_sum : BoolMatrixAutomaton
+            Direct sum
+        """
         shifted_state_to_idx = {
             state: len(self.state_to_idx) + idx
             for state, idx in other.state_to_idx.items()
