@@ -333,7 +333,7 @@ class BoolMatrixAutomaton:
         def front_with_self_start_row(self_start_row: lil_array):
             front = lil_array(
                 (
-                    len(self.state_to_idx),
+                    len(other.state_to_idx),
                     len(self.state_to_idx) + len(other.state_to_idx),
                 )
             )
@@ -343,7 +343,7 @@ class BoolMatrixAutomaton:
                 front[idx, len(other.state_to_idx) :] = self_start_row
             return front
 
-        if reachable_per_node:
+        if not reachable_per_node:
             start_indices = set(
                 self.state_to_idx[state] for state in ordered_start_states
             )
@@ -354,7 +354,7 @@ class BoolMatrixAutomaton:
                         for idx in range(len(self.state_to_idx))
                     ]
                 )
-            ).tocsc()
+            ).tocsr()
 
         fronts = [
             front_with_self_start_row(
@@ -373,7 +373,7 @@ class BoolMatrixAutomaton:
             if fronts
             else csr_matrix(
                 (
-                    len(self.state_to_idx),
+                    len(other.state_to_idx),
                     len(self.state_to_idx) + len(other.state_to_idx),
                 )
             )

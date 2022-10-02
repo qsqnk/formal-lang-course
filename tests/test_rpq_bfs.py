@@ -21,7 +21,13 @@ def non_empty_graph():
     graph.add_edge(2, 3, label="d")
     graph.add_edge(3, 4, label="e")
     graph.add_edge(4, 5, label="e")
+    return graph
 
+
+def graph_by_word(word: str):
+    graph = MultiDiGraph()
+    for i, c in enumerate(word):
+        graph.add_edge(i, i + 1, label=c)
     return graph
 
 
@@ -91,3 +97,25 @@ def test_rpq_non_empty_graph_all_states_are_start_and_final_separated(non_empty_
         mode=MultipleSourceRpqMode.FIND_REACHABLE_FOR_EACH_START_NODE,
     )
     assert result == {(0, 3), (0, 4), (0, 5)}
+
+
+def test_rpq_graph_by_word():
+    result = rpq_bfs(
+        graph=graph_by_word("abababa"),
+        query=Regex("(a)(b)(a)"),
+        start_states=None,
+        final_states=None,
+        mode=MultipleSourceRpqMode.FIND_ALL_REACHABLE,
+    )
+    assert result == {3, 5, 7}
+
+
+def test_rpq_graph_by_word_separated():
+    result = rpq_bfs(
+        graph=graph_by_word("abababa"),
+        query=Regex("(a)(b)(a)"),
+        start_states=None,
+        final_states=None,
+        mode=MultipleSourceRpqMode.FIND_REACHABLE_FOR_EACH_START_NODE,
+    )
+    assert result == {(0, 3), (2, 5), (4, 7)}
