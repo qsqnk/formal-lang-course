@@ -1,7 +1,7 @@
-from typing import Dict, Set, Any, Optional
+from typing import Dict, Set, Any
 
 from pyformlang.finite_automaton import State, EpsilonNFA
-from scipy.sparse import dok_matrix, kron
+from scipy.sparse import dok_matrix, kron, bmat
 
 __all__ = [
     "BoolMatrixAutomaton",
@@ -177,3 +177,29 @@ class BoolMatrixAutomaton:
                     dok_mtx[state_to_idx[state_from], state_to_idx[state_to]] = True
             b_mtx[label] = dok_mtx
         return b_mtx
+
+    def _direct_sum(self, other: "BoolMatrixAutomaton") -> "BoolMatrixAutomaton":
+        shifted_state_to_idx = {
+            state: len(self.state_to_idx) + idx
+            for state, idx in other.state_to_idx.items()
+        }
+        state_to_idx = {**self.state_to_idx, **shifted_state_to_idx}
+        start_states = self.start_states | other.start_states
+        final_states = self.final_states | other.final_states
+        b_mtx = {
+            label: bmat(
+                [
+                    [self.b_mtx[label], None],
+                    [None, other.b_mtx[label]],
+                ],
+                format="dok",
+                dtype=bool,
+            )
+            for label in self.b_mtx.keys() & other.b_mtx.keys()
+        }
+        return BoolMatrixAutomaton(
+            state_to_idx=state_to_idx,
+            start_states=start_states,
+            final_states=final_states,
+            b_mtx=b_mtx,
+        )
