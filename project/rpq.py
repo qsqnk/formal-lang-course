@@ -116,4 +116,18 @@ def rpq_bfs(
         if mode is FIND_REACHABLE_FOR_EACH_START_NODE -- set of tuples (U, V)
         where U is start node and V is node reachable from U
     """
-    return None
+    nfa_bool_mtx = BoolMatrixAutomaton.from_nfa(
+        graph_to_epsilon_nfa(
+            graph=graph,
+            start_states=start_states,
+            final_states=final_states,
+        )
+    )
+    query_bool_mtx = BoolMatrixAutomaton.from_nfa(
+        regex_to_min_dfa(regex=query),
+    )
+    return nfa_bool_mtx.sync_bfs(
+        other=query_bool_mtx,
+        reachable_per_node=mode
+        == MultipleSourceRpqMode.FIND_REACHABLE_FOR_EACH_START_NODE,
+    )

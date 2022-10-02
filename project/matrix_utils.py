@@ -1,7 +1,7 @@
 from typing import Dict, Set, Any
 
 from pyformlang.finite_automaton import State, EpsilonNFA
-from scipy.sparse import dok_matrix, kron, bmat
+from scipy.sparse import dok_matrix, kron, bmat, csr_matrix, lil_array, vstack
 
 __all__ = [
     "BoolMatrixAutomaton",
@@ -204,8 +204,6 @@ class BoolMatrixAutomaton:
                     [self.b_mtx[label], None],
                     [None, other.b_mtx[label]],
                 ],
-                format="dok",
-                dtype=bool,
             )
             for label in self.b_mtx.keys() & other.b_mtx.keys()
         }
@@ -214,4 +212,119 @@ class BoolMatrixAutomaton:
             start_states=start_states,
             final_states=final_states,
             b_mtx=b_mtx,
+        )
+
+    def sync_bfs(
+        self,
+        other: "BoolMatrixAutomaton",
+        reachable_per_node: bool,
+    ) -> Set[Any]:
+        direct_sum = other._direct_sum(self)
+        front = self._init_sync_bfs_front(other, reachable_per_node)
+        visited = front.copy()
+
+        self_states_num = len(self.state_to_idx)
+        other_states_num = len(other.state_to_idx)
+
+        while True:
+            visited_nnz = visited.nnz
+            new_front = front.copy()
+
+            for _, mtx in direct_sum.b_mtx.items():
+                product: csr_matrix = front @ mtx
+                new_front_step = lil_array(product.shape)
+                for i, j in zip(*product.nonzero()):
+                    if j >= other_states_num:
+                        continue
+                    row = product.getrow(i).tolil()[[0], other_states_num:]
+                    if not row.nnz:
+                        continue
+                    row_shift = i // other_states_num * other_states_num
+                    new_front_step[row_shift + j, j] = 1
+                    new_front_step[row_shift + j, other_states_num:] += row
+                new_front_step = new_front_step.tocsr()
+
+                visited += new_front_step
+                new_front += new_front_step
+
+            for i, j in zip(*new_front.nonzero()):
+                if visited[i, j]:
+                    new_front[i, j] = 0
+
+            if visited_nnz == visited.nnz:
+                break
+
+        self_idx_to_state = {idx: state for state, idx in self.state_to_idx.items()}
+        other_idx_to_state = {idx: state for state, idx in other.state_to_idx.items()}
+        self_idx_to_start_state = {
+            idx: state for idx, state in enumerate(self.start_states)
+        }
+
+        result = set()
+        for i, j in zip(*visited.nonzero()):
+            if (
+                other_idx_to_state[i % other_states_num] not in other.final_states
+                or j < other_states_num
+            ):
+                continue
+            self_state = self_idx_to_state[j - other_states_num]
+            if self_state not in self.final_states:
+                continue
+            result.add(
+                self_state
+                if not reachable_per_node
+                else (self_idx_to_start_state[i // other_states_num], self_state)
+            )
+        return result
+
+    def _init_sync_bfs_front(
+        self,
+        other: "BoolMatrixAutomaton",
+        reachable_per_node: bool,
+    ) -> csr_matrix:
+        def front_with_self_start_row(self_start_row: lil_array):
+            front = lil_array(
+                (
+                    len(self.state_to_idx),
+                    len(self.state_to_idx) + len(other.state_to_idx),
+                )
+            )
+            for state in other.start_states:
+                idx = other.state_to_idx[state]
+                front[idx, idx] = 1
+                front[idx, len(other.state_to_idx) :] = self_start_row
+            return front
+
+        if reachable_per_node:
+            start_indices = set(self.state_to_idx[state] for state in self.start_states)
+            return front_with_self_start_row(
+                lil_array(
+                    [
+                        1 if idx in start_indices else 0
+                        for idx in range(len(self.state_to_idx))
+                    ]
+                )
+            ).tocsc()
+
+        fronts = [
+            front_with_self_start_row(
+                lil_array(
+                    [
+                        1 if idx == self.state_to_idx[start] else 0
+                        for idx in range(len(self.state_to_idx))
+                    ]
+                )
+            )
+            for start in self.start_states
+        ]
+
+        return (
+            csr_matrix(vstack(fronts))
+            if fronts
+            else csr_matrix(
+                (
+                    len(self.state_to_idx),
+                    len(self.state_to_idx) + len(other.state_to_idx),
+                )
+            )
         )
