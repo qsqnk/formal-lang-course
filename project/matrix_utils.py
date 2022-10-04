@@ -226,7 +226,7 @@ class BoolMatrixAutomaton:
         other : BoolMatrixAutomaton
             The matrix with which bfs will be executed
         reachable_per_node: bool
-            Means calculates achievable for each node separately or not
+            Means calculates reachability for each node separately or not
 
         Returns
         -------
@@ -234,7 +234,7 @@ class BoolMatrixAutomaton:
             Result depends on reachable_per_node
         if reachable_per_node is false -- set of reachable nodes
         if reachable_per_node is true -- set of tuples (U, V)
-        where U is start node and V is node reachable from U
+        where U is start node and V is final node reachable from U
         """
 
         if not self.state_to_idx or not other.state_to_idx:
@@ -320,7 +320,7 @@ class BoolMatrixAutomaton:
         other : BoolMatrixAutomaton
             The matrix with which bfs will be executed
         reachable_per_node: bool
-            Means calculates achievable for each node separately or not
+            Means calculates reachability for each node separately or not
             ordered_start_states: List[State]
             List of start states
 

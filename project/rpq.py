@@ -116,7 +116,7 @@ def rpq_bfs(
         Result depends on chosen mode
         if mode is FIND_ALL_REACHABLE -- set of reachable nodes
         if mode is FIND_REACHABLE_FOR_EACH_START_NODE -- set of tuples (U, V)
-        where U is start node and V is node reachable from U
+        where U is start node and V is final node reachable from U
     """
     nfa_bool_mtx = BoolMatrixAutomaton.from_nfa(
         graph_to_epsilon_nfa(
