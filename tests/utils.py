@@ -1,8 +1,14 @@
+import sys
+
 from networkx import is_isomorphic, MultiDiGraph
 from networkx.algorithms.isomorphism import (
     categorical_node_match,
     categorical_multiedge_match,
 )
+
+
+def system_is_linux():
+    return sys.platform == "linux"
 
 
 def check_graphs_are_isomorphic(first_graph, second_graph):

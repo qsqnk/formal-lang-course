@@ -2,6 +2,7 @@ import pytest
 from pyformlang.finite_automaton import EpsilonNFA, State, Symbol
 
 from project.matrix_utils_pycubool import *
+from tests.utils import *
 
 
 @pytest.fixture
@@ -21,6 +22,8 @@ def non_empty_nfa():
 
 
 def test_bool_matrix_from_empty_nfa(empty_nfa):
+    if not system_is_linux():
+        return
     mtx = BoolMatrixAutomatonPyCuBool.from_nfa(empty_nfa)
     assert all(
         (
@@ -33,6 +36,8 @@ def test_bool_matrix_from_empty_nfa(empty_nfa):
 
 
 def test_bool_matrix_from_non_empty_nfa_states(non_empty_nfa):
+    if not system_is_linux():
+        return
     mtx = BoolMatrixAutomatonPyCuBool.from_nfa(non_empty_nfa)
     assert all(
         (
@@ -44,6 +49,8 @@ def test_bool_matrix_from_non_empty_nfa_states(non_empty_nfa):
 
 
 def test_bool_matrix_from_non_empty_nfa_matrix(non_empty_nfa):
+    if not system_is_linux():
+        return
     mtx = BoolMatrixAutomatonPyCuBool.from_nfa(non_empty_nfa)
     assert all(
         (
@@ -55,6 +62,8 @@ def test_bool_matrix_from_non_empty_nfa_matrix(non_empty_nfa):
 
 
 def test_bool_matrix_intersection_with_empty(non_empty_nfa, empty_nfa):
+    if not system_is_linux():
+        return
     intersection = BoolMatrixAutomatonPyCuBool.from_nfa(
         non_empty_nfa
     ) & BoolMatrixAutomatonPyCuBool.from_nfa(empty_nfa)
@@ -69,6 +78,8 @@ def test_bool_matrix_intersection_with_empty(non_empty_nfa, empty_nfa):
 
 
 def test_intersection_with_non_empty_automaton_states(non_empty_nfa):
+    if not system_is_linux():
+        return
     intersection = BoolMatrixAutomatonPyCuBool.from_nfa(
         non_empty_nfa
     ) & BoolMatrixAutomatonPyCuBool.from_nfa(non_empty_nfa)
@@ -83,6 +94,8 @@ def test_intersection_with_non_empty_automaton_states(non_empty_nfa):
 
 
 def test_intersection_with_non_empty_automaton_matrix(non_empty_nfa):
+    if not system_is_linux():
+        return
     intersection = BoolMatrixAutomatonPyCuBool.from_nfa(
         non_empty_nfa
     ) & BoolMatrixAutomatonPyCuBool.from_nfa(non_empty_nfa)
@@ -96,10 +109,14 @@ def test_intersection_with_non_empty_automaton_matrix(non_empty_nfa):
 
 
 def test_transitive_closure_empty(empty_nfa):
+    if not system_is_linux():
+        return
     tc = BoolMatrixAutomatonPyCuBool.from_nfa(empty_nfa).transitive_closure()
     assert not tc.to_list()
 
 
 def test_transitive_closure_non_empty(non_empty_nfa):
+    if not system_is_linux():
+        return
     tc = BoolMatrixAutomatonPyCuBool.from_nfa(non_empty_nfa).transitive_closure()
     assert [(0, 0), (0, 1), (1, 1)] == tc.to_list()

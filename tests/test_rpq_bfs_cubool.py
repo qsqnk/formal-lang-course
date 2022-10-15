@@ -1,14 +1,10 @@
 import sys
 
 import pytest
-from networkx import MultiDiGraph
 from pyformlang.regular_expression import Regex
 
 from project.rpq import *
-
-
-def system_is_linux():
-    return sys.platform == "linux"
+from tests.utils import *
 
 
 @pytest.fixture

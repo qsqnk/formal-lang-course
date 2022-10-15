@@ -1,5 +1,5 @@
 import enum
-from typing import Set, Optional, Tuple, Any, Dict
+from typing import Set, Optional, Tuple, Any
 
 from networkx import MultiDiGraph
 from pyformlang.regular_expression import Regex
