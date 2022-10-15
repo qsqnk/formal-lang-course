@@ -294,7 +294,19 @@ class BoolMatrixAutomatonPyCuBool:
         return result
 
     @staticmethod
-    def _copy_mtx(matrix: Matrix):
+    def _copy_mtx(matrix: Matrix) -> Matrix:
+        """Makes copy of given matrix
+
+        Parameters
+        ----------
+        matrix : Matrix
+            Matrix to be copied
+
+        Returns
+        -------
+        copy : Matrix
+            Copy of matrix
+        """
         copy = Matrix.empty(matrix.shape)
         for i, j in matrix:
             copy[i, j] = True
