@@ -4,12 +4,18 @@ from typing import Set, Optional, Tuple, Any, Dict
 from networkx import MultiDiGraph
 from pyformlang.regular_expression import Regex
 
-from project import graph_to_epsilon_nfa, BoolMatrixAutomaton, regex_to_min_dfa
+from project import (
+    graph_to_epsilon_nfa,
+    BoolMatrixAutomaton,
+    regex_to_min_dfa,
+    BoolMatrixAutomatonPyCuBool,
+)
 
 __all__ = [
     "rpq_tensor",
     "rpq_bfs",
     "MultipleSourceRpqMode",
+    "MatrixType",
 ]
 
 
@@ -86,12 +92,29 @@ class MultipleSourceRpqMode(enum.Enum):
     FIND_REACHABLE_FOR_EACH_START_NODE = enum.auto()
 
 
+class MatrixType(enum.Enum):
+    """Class represents type of matrices used in sync bfs
+
+    Values
+    ----------
+
+    SCIPY : MatrixType
+        Sparse matrices from scipy library
+    PYCUBOOL : MatrixType
+        Sparse matrices from pycubool library
+    """
+
+    SCIPY = enum.auto()
+    PYCUBOOL = enum.auto()
+
+
 def rpq_bfs(
     graph: MultiDiGraph,
     query: Regex,
     start_states: Optional[Set],
     final_states: Optional[Set],
     mode: MultipleSourceRpqMode,
+    matrix_type: MatrixType,
 ) -> Set[Any]:
     """Executes regular query on graph using multiple source bfs
 
@@ -109,6 +132,8 @@ def rpq_bfs(
         If parameter is None then each graph node is considered the final state
     mode: MultipleSourceRpqMode
         The mode that determines which vertices should be found
+    matrix_type: MatrixType
+        The type of sparse matrices used in sync bfs
 
     Returns
     -------
@@ -118,14 +143,19 @@ def rpq_bfs(
         if mode is FIND_REACHABLE_FOR_EACH_START_NODE -- set of tuples (U, V)
         where U is start node and V is final node reachable from U
     """
-    nfa_bool_mtx = BoolMatrixAutomaton.from_nfa(
+    mtx_creator = (
+        lambda nfa: BoolMatrixAutomatonPyCuBool.from_nfa(nfa)
+        if matrix_type == MatrixType.PYCUBOOL
+        else BoolMatrixAutomaton.from_nfa(nfa)
+    )
+    nfa_bool_mtx = mtx_creator(
         graph_to_epsilon_nfa(
             graph=graph,
             start_states=start_states,
             final_states=final_states,
         )
     )
-    query_bool_mtx = BoolMatrixAutomaton.from_nfa(
+    query_bool_mtx = mtx_creator(
         regex_to_min_dfa(regex=query),
     )
     return nfa_bool_mtx.sync_bfs(

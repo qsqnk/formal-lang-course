@@ -38,7 +38,7 @@ def test_rpq_bfs_empty_graph(empty_graph):
         start_states=None,
         final_states=None,
         mode=MultipleSourceRpqMode.FIND_ALL_REACHABLE,
-        matrix_type=MatrixType.SCIPY,
+        matrix_type=MatrixType.PYCUBOOL,
     )
     assert not result
 
@@ -50,7 +50,7 @@ def test_rpq_bfs_empty_graph_separated(empty_graph):
         start_states=None,
         final_states=None,
         mode=MultipleSourceRpqMode.FIND_REACHABLE_FOR_EACH_START_NODE,
-        matrix_type=MatrixType.SCIPY,
+        matrix_type=MatrixType.PYCUBOOL,
     )
     assert not result
 
@@ -62,7 +62,7 @@ def test_rpq_bfs_non_empty_graph_one_start_state_one_final_state(non_empty_graph
         start_states={0},
         final_states={3},
         mode=MultipleSourceRpqMode.FIND_ALL_REACHABLE,
-        matrix_type=MatrixType.SCIPY,
+        matrix_type=MatrixType.PYCUBOOL,
     )
     assert result == {3}
 
@@ -76,7 +76,7 @@ def test_rpq_bfs_non_empty_graph_one_start_state_one_final_state_separated(
         start_states={0},
         final_states={3},
         mode=MultipleSourceRpqMode.FIND_REACHABLE_FOR_EACH_START_NODE,
-        matrix_type=MatrixType.SCIPY,
+        matrix_type=MatrixType.PYCUBOOL,
     )
     assert result == {(0, 3)}
 
@@ -88,7 +88,7 @@ def test_rpq_non_empty_graph_all_states_are_start_and_final(non_empty_graph):
         start_states=None,
         final_states=None,
         mode=MultipleSourceRpqMode.FIND_ALL_REACHABLE,
-        matrix_type=MatrixType.SCIPY,
+        matrix_type=MatrixType.PYCUBOOL,
     )
     assert result == {3, 4, 5}
 
@@ -100,7 +100,7 @@ def test_rpq_non_empty_graph_all_states_are_start_and_final_separated(non_empty_
         start_states=None,
         final_states=None,
         mode=MultipleSourceRpqMode.FIND_REACHABLE_FOR_EACH_START_NODE,
-        matrix_type=MatrixType.SCIPY,
+        matrix_type=MatrixType.PYCUBOOL,
     )
     assert result == {(0, 3), (0, 4), (0, 5)}
 
@@ -112,7 +112,7 @@ def test_rpq_graph_by_word():
         start_states=None,
         final_states=None,
         mode=MultipleSourceRpqMode.FIND_ALL_REACHABLE,
-        matrix_type=MatrixType.SCIPY,
+        matrix_type=MatrixType.PYCUBOOL,
     )
     assert result == {3, 5, 7}
 
@@ -124,6 +124,6 @@ def test_rpq_graph_by_word_separated():
         start_states=None,
         final_states=None,
         mode=MultipleSourceRpqMode.FIND_REACHABLE_FOR_EACH_START_NODE,
-        matrix_type=MatrixType.SCIPY,
+        matrix_type=MatrixType.PYCUBOOL,
     )
     assert result == {(0, 3), (2, 5), (4, 7)}
