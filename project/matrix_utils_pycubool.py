@@ -3,6 +3,8 @@ from typing import Dict, Set, Any, List
 
 from pyformlang.finite_automaton import State, EpsilonNFA
 
+from pycubool import Matrix
+
 __all__ = [
     "BoolMatrixAutomatonPyCuBool",
 ]
