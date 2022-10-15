@@ -1,8 +1,10 @@
 import pytest
 from pyformlang.finite_automaton import EpsilonNFA, State, Symbol
 
-from project.matrix_utils_pycubool import *
 from tests.utils import *
+
+if system_is_linux():
+    from project.matrix_utils_pycubool import *
 
 
 @pytest.fixture

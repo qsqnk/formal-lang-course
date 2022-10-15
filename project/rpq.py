@@ -1,4 +1,5 @@
 import enum
+import sys
 from typing import Set, Optional, Tuple, Any
 
 from networkx import MultiDiGraph
@@ -8,8 +9,10 @@ from project import (
     graph_to_epsilon_nfa,
     BoolMatrixAutomaton,
     regex_to_min_dfa,
-    BoolMatrixAutomatonPyCuBool,
 )
+
+if sys.platform == "linux":
+    from project import BoolMatrixAutomatonPyCuBool
 
 __all__ = [
     "rpq_tensor",
