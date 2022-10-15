@@ -3,8 +3,8 @@ black
 cfpq-data
 networkx
 pre-commit
+pycubool
 pydot
 pyformlang
 pytest
 scipy
-pycubool
