@@ -86,8 +86,6 @@ def test_intersection_with_non_empty_automaton_matrix(non_empty_nfa):
     intersection = BoolMatrixAutomaton.from_nfa(
         non_empty_nfa
     ) & BoolMatrixAutomaton.from_nfa(non_empty_nfa)
-    for label, values in intersection.b_mtx.items():
-        print(label, values.toarray().tolist())
     assert all(
         (
             [

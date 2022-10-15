@@ -246,7 +246,6 @@ class BoolMatrixAutomatonPyCuBool:
             for _, mtx in direct_sum.b_mtx.items():
                 product: Matrix = front.mxm(mtx)
                 new_front_step = Matrix.empty(product.shape)
-                print(front.nvals, mtx.nvals, product.nvals)
                 for i, j in product:
                     if j >= other_states_num:
                         continue
