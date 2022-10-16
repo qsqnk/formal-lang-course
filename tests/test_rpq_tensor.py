@@ -28,6 +28,7 @@ def test_rpq_empty_graph(empty_graph):
         query=Regex("abc"),
         start_states=None,
         final_states=None,
+        matrix_type=MatrixType.SCIPY,
     )
     assert not result
 
@@ -38,6 +39,7 @@ def test_rpq_non_empty_graph_one_start_state_one_final_state(non_empty_graph):
         query=Regex("(a|b)(c|d)"),
         start_states={0},
         final_states={3},
+        matrix_type=MatrixType.SCIPY,
     )
     assert {(0, 3)} == result
 
@@ -48,5 +50,6 @@ def test_rpq_non_empty_graph_all_states_are_start_and_final(non_empty_graph):
         query=Regex("(a|b)(c|d)"),
         start_states=None,
         final_states=None,
+        matrix_type=MatrixType.SCIPY,
     )
     assert {(0, 3)} == result
