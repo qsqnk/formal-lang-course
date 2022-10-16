@@ -11,9 +11,6 @@ from project import (
     regex_to_min_dfa,
 )
 
-if sys.platform == "linux":
-    from project import BoolMatrixAutomatonPyCuBool
-
 __all__ = [
     "rpq_tensor",
     "rpq_bfs",
@@ -60,6 +57,7 @@ def nfa_to_mtx_converter(matrix_type: MatrixType) -> Callable:
     else:
         if sys.platform != "linux":
             raise RuntimeError("Unsupported operating system")
+        from project import BoolMatrixAutomatonPyCuBool
         return lambda nfa: BoolMatrixAutomatonPyCuBool.from_nfa(nfa)
 
 
