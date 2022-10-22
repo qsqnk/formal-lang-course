@@ -42,7 +42,7 @@ from project.cfg_utils import *
         ),
     ],
 )
-def test_generated_words(cfg, expected_productions):
+def test_conversion_to_wcnf(cfg, expected_productions):
     cfg_wcnf = cfg_to_wcnf(CFG.from_text(cfg))
     assert cfg_wcnf.productions == expected_productions
 
