@@ -72,7 +72,7 @@ def test_conversion_to_wcnf(cfg, expected_productions):
         ),
     ],
 )
-def test_both_form_accept_same(cfg, words):
+def test_both_forms_accept_same(cfg, words):
     cfg = CFG.from_text(cfg)
     wcnf = cfg_to_wcnf(cfg)
     assert all(cfg.contains(word) == wcnf.contains(word) for word in words)
