@@ -1,13 +1,12 @@
 from typing import Union
 
 from pyformlang.cfg import CFG, Variable
+from typing.io import IO
 
 __all__ = [
     "cfg_to_wcnf",
     "cfg_from_file",
 ]
-
-from typing.io import IO
 
 
 def cfg_to_wcnf(cfg: CFG) -> CFG:
