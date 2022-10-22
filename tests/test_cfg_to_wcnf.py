@@ -28,7 +28,7 @@ from project.cfg_utils import *
         ),
         (
             """
-            S ->  
+            S ->
             S -> a S b S
             """,
             {
