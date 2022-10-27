@@ -5,6 +5,8 @@ from typing import Union, List
 from pyformlang.cfg import CFG, Variable
 from pyformlang.cfg.cfg_object import CFGObject
 from pyformlang.regular_expression import Regex
+from project.rsm import RSM
+from project.ecfg import ECFG
 from typing.io import IO
 
 __all__ = [
@@ -15,8 +17,6 @@ __all__ = [
     "ecfg_to_rsm",
 ]
 
-from project.rsm import RSM
-from project.ecfg import ECFG
 
 
 def cfg_to_wcnf(cfg: CFG) -> CFG:
