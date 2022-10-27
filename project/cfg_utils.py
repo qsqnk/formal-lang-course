@@ -18,7 +18,6 @@ __all__ = [
 ]
 
 
-
 def cfg_to_wcnf(cfg: CFG) -> CFG:
     """Converts CFG to Weak Chomsky Normal Form
 
@@ -85,7 +84,7 @@ def cfg_to_ecfg(cfg: CFG) -> ECFG:
         variables=cfg.variables,
         productions={
             h: reduce(Regex.union, map(concat_body, bodies))
-            for h, bodies in productions
+            for h, bodies in productions.items()
         },
     )
 
@@ -126,7 +125,10 @@ def ecfg_to_rsm(ecfg: ECFG) -> RSM:
     """
     return RSM(
         start_symbol=ecfg.start_symbol,
-        boxes={h: r.to_epsilon_nfa().to_deterministic() for h, r in ecfg.productions},
+        boxes={
+            h: r.to_epsilon_nfa().to_deterministic()
+            for h, r in ecfg.productions.items()
+        },
     )
 
 
@@ -143,4 +145,6 @@ def concat_body(body: List[CFGObject]) -> Regex:
     regex: Regex
         Regular expression
     """
-    return reduce(Regex.concatenate, [Regex(o.value) for o in body], initial=Regex(""))
+    return (
+        reduce(Regex.concatenate, [Regex(o.value) for o in body]) if body else Regex("")
+    )

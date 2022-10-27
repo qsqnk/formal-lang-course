@@ -6,7 +6,7 @@ __all__ = [
 
 
 def minimize_rsm(rsm: RSM) -> RSM:
-    """Minimizes RSM by minimising internal automatons
+    """Minimizes RSM by minimizing internal automatons
 
     Parameters
     ----------
@@ -15,10 +15,10 @@ def minimize_rsm(rsm: RSM) -> RSM:
 
     Returns
     -------
-    minimised_rsm : RSM
+    minimized_rsm : RSM
         Minimized recursive state machine
     """
     return RSM(
         start_symbol=rsm.start_symbol,
-        boxes={v: a.minimize() for v, a in rsm.boxes},
+        boxes={v: a.minimize() for v, a in rsm.boxes.items()},
     )

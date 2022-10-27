@@ -46,8 +46,10 @@ class ECFG(NamedTuple):
         variables = set()
         productions = dict()
         for line in text.splitlines():
-            content = map(str.strip, line.split("->"))
-            assert len([*content]) == 2
+            if not line.strip():
+                continue
+            content = [str.strip(e) for e in line.split("->")]
+            assert len(content) == 2
             head, body = content
             head, body = Variable(head), Regex(body)
             assert head not in variables
