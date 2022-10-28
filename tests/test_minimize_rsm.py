@@ -1,6 +1,6 @@
 import pytest
 
-from project import ecfg_to_rsm, ECFG, minimize_rsm
+from project.rsm_utils import *
 from tests.utils import check_automatons_are_equivalent
 
 

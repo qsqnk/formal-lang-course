@@ -1,6 +1,8 @@
 import pytest
 
-from project import ECFG, ecfg_to_rsm, regex_to_min_dfa
+from project.cfg_utils import *
+from project.ecfg import *
+from project.automata import *
 from tests.utils import check_automatons_are_equivalent
 
 

@@ -2,7 +2,8 @@ import pytest
 from pyformlang.cfg import CFG, Variable
 from pyformlang.regular_expression import Regex
 
-from project import cfg_to_ecfg, regex_to_min_dfa
+from project.cfg_utils import *
+from project.automata import *
 from tests.utils import check_automatons_are_equivalent
 
 
