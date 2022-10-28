@@ -1,5 +1,7 @@
 import pytest
 
+from project.ecfg import *
+from project.cfg_utils import *
 from project.rsm_utils import *
 from tests.utils import check_automatons_are_equivalent
 
