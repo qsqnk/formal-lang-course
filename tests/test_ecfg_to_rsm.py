@@ -1,6 +1,5 @@
 import pytest
 
-from project.cfg_utils import *
 from project.ecfg import *
 from project.automata import *
 from tests.utils import check_automatons_are_equivalent
@@ -24,7 +23,7 @@ from tests.utils import check_automatons_are_equivalent
 )
 def test_ecfg_to_rsm(ecfg_as_text):
     ecfg = ECFG.from_text(ecfg_as_text)
-    rsm = ecfg_to_rsm(ecfg)
+    rsm = ecfg.to_rsm()
     assert len(ecfg.productions) == len(rsm.boxes)
     assert all(
         check_automatons_are_equivalent(

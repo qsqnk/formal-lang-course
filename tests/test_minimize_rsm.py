@@ -1,8 +1,6 @@
 import pytest
 
 from project.ecfg import *
-from project.cfg_utils import *
-from project.rsm_utils import *
 from tests.utils import check_automatons_are_equivalent
 
 
@@ -23,8 +21,8 @@ from tests.utils import check_automatons_are_equivalent
     ],
 )
 def test_minimize_rsm(corresponding_ecfg_as_text):
-    rsm = ecfg_to_rsm(ECFG.from_text(corresponding_ecfg_as_text))
-    minimized = minimize_rsm(rsm)
+    rsm = ECFG.from_text(corresponding_ecfg_as_text).to_rsm()
+    minimized = rsm.minimize()
     assert all(
         check_automatons_are_equivalent(
             automaton,

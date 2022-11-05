@@ -13,8 +13,5 @@ from project.cfg_utils import *
 import project.rsm
 from project.rsm import *
 
-import project.rsm_utils
-from project.rsm_utils import *
-
 import project.ecfg
 from project.ecfg import *

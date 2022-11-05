@@ -2,7 +2,7 @@ import pytest
 from pyformlang.cfg import CFG, Variable
 from pyformlang.regular_expression import Regex
 
-from project.cfg_utils import *
+from project.ecfg import *
 from project.automata import *
 from tests.utils import check_automatons_are_equivalent
 
@@ -34,7 +34,7 @@ from tests.utils import check_automatons_are_equivalent
     ],
 )
 def test_cfg_to_ecfg(cfg_as_text, ecfg_productions_str):
-    ecfg = cfg_to_ecfg(CFG.from_text(cfg_as_text))
+    ecfg = ECFG.from_cfg(CFG.from_text(cfg_as_text))
     expected_productions = {v: Regex(r) for v, r in ecfg_productions_str.items()}
     assert len(ecfg.productions) == len(expected_productions)
     assert all(
