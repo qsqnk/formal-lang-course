@@ -6,7 +6,8 @@ __all__ = [
 
 
 def cyk(s: str, cfg: CFG) -> bool:
-    """Determines whether a word belongs to a given grammar using CYK algorithm
+    """Determines whether a word belongs to a given
+    context free grammar using CYK algorithm
 
     Parameters
     ----------
