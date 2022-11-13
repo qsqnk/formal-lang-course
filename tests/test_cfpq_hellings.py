@@ -40,8 +40,8 @@ from project.cfpq import *
         ),
         (
             """
-            S -> 
-            S -> a b 
+            S ->
+            S -> a b
             S -> b a
             """,
             create_two_cycle_labeled_graph(1, 1, ("a", "b")),
