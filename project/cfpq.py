@@ -1,9 +1,9 @@
 from collections import defaultdict, deque
-from typing import Tuple, Set, Any
+from typing import Tuple, Set, Any, Union
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG, Variable, Terminal
-
-from project.cfg_utils import cfg_to_wcnf
+from project.graph_utils import load_graph
+from project.cfg_utils import cfg_to_wcnf, cfg_from_file
 
 __all__ = [
     "cfpq",
@@ -11,21 +11,21 @@ __all__ = [
 
 
 def cfpq(
-    graph: MultiDiGraph,
-    cfg: CFG,
+    graph: Union[str, MultiDiGraph],
+    cfg: Union[str, CFG],
     start_nodes: Set[Any] = None,
     final_nodes: Set[Any] = None,
     start_symbol: Variable = Variable("S"),
 ) -> Set[Tuple[Any, Any]]:
-    """Executes context free query on graph using Hellings algorithm
+    """Executes context-free query on graph using Hellings algorithm
 
     Parameters
       ----------
       cfg : CFG
-          Context free grammar
+          Path to file containing context-free grammar or Context-free grammar itself
 
-      graph : MultiDiGraph
-          Graph
+      graph : Union[str, MultiDiGraph]
+          Graph name from cfpq-data dataset or Graph itself
 
       start_nodes: Set[Any]
           Set of start nodes of the graph. If parameter is not specified then all nodes are treated as start
@@ -41,6 +41,10 @@ def cfpq(
       result: Set[Tuple[Any, Any]]
           Pairs of vertices between which there is a path with specified constraints
     """
+    if isinstance(graph, str):
+        graph = load_graph(graph)
+    if isinstance(cfg, str):
+        cfg = cfg_from_file(cfg)
     cfg._start_symbol = start_symbol
     if not start_nodes:
         start_nodes = graph.nodes
@@ -48,22 +52,22 @@ def cfpq(
         final_nodes = graph.nodes
     return {
         (i, j)
-        for (i, n, j) in hellings(cfg, graph)
+        for (i, n, j) in _hellings(cfg, graph)
         if start_symbol == n and i in start_nodes and j in final_nodes
     }
 
 
-def hellings(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
-    """Runs Hellings algorithm on given context free grammar and graph
+def _hellings(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
+    """Runs Hellings algorithm on given context-free grammar and graph
     in order to get triples, where the first element is the first vertex,
     the second element is a non-terminal, and the third element is the second vertex
     for which there is a path in the graph between these vertices derived from this non-terminal
-    from given context free grammar
+    from given context-free grammar
 
       Parameters
       ----------
       cfg : CFG
-          Context free grammar
+          Context-free grammar
 
       graph : MultiDiGraph
           Graph
