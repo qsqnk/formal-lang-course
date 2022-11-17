@@ -224,7 +224,12 @@ def _convert_wcnf_prods(
       Productions
 
     Returns
-    -------
+    ----------
+    result: Tuple[
+      Set[Variable],
+      Dict[Variable, Set[Terminal]],
+      Dict[Variable, Set[Tuple[Variable, Variable]]],
+    ]
     Triple of set of non-terminals that produces epsilon,
     mapping from non-terminal to terminal that it produces
     mapping from non-terminal to pairs of non-terminals that it produces
