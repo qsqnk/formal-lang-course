@@ -8,7 +8,7 @@ from utils import *
 def test_empty_regex_dfa_has_no_states():
     regex = Regex("")
     regex_dfa = regex_to_min_dfa(regex)
-    assert not regex_dfa.states
+    assert regex_dfa.states == {State("Empty")}
 
 
 def test_or_regex_dfa_is_correct():
