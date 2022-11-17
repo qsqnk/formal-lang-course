@@ -1,7 +1,7 @@
 from pyformlang.finite_automaton import EpsilonNFA, Symbol, Epsilon, State
 
 from project.automata import *
-from tests.utils import *
+from utils import *
 
 
 def test_empty_graph_to_epsilon_nfa():

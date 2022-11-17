@@ -2,7 +2,7 @@ from pyformlang.finite_automaton import DeterministicFiniteAutomaton, Symbol, St
 from pyformlang.regular_expression import Regex
 
 from project.automata import *
-from tests.utils import *
+from utils import *
 
 
 def test_empty_regex_dfa_has_no_states():
