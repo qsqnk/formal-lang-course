@@ -2,7 +2,7 @@ import pytest
 
 from project.ecfg import *
 from project.automata import *
-from tests.utils import check_automatons_are_equivalent
+from utils import check_automatons_are_equivalent
 
 
 @pytest.mark.parametrize(

@@ -4,7 +4,7 @@ import os
 import cfpq_data
 
 from project.graph_utils import *
-from tests.utils import check_graphs_are_isomorphic
+from utils import check_graphs_are_isomorphic
 
 test_dir_path = os.path.dirname(os.path.abspath(__file__))
 

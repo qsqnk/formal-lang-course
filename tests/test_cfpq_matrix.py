@@ -1,4 +1,5 @@
 import pytest
+
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG
 
@@ -60,7 +61,7 @@ from project.cfpq import *
 def test_cfpq(cfg_as_text, graph, reachable_pairs):
     assert (
         cfpq(
-            algo=CFPQAlgorithm.HELLINGS,
+            algo=CFPQAlgorithm.MATRIX,
             graph=graph,
             cfg=CFG.from_text(cfg_as_text),
             start_nodes=None,
