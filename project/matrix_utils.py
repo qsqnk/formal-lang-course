@@ -2,12 +2,12 @@ from typing import Dict, Set, Any, List
 
 from pyformlang.finite_automaton import State, EpsilonNFA
 from scipy.sparse import dok_matrix, kron, bmat, csr_matrix, lil_array, vstack
+from project.rsm import RSM
+
 
 __all__ = [
     "BoolMatrixAutomaton",
 ]
-
-from project.rsm import RSM
 
 
 class BoolMatrixAutomaton:
