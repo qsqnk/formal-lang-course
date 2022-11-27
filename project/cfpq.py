@@ -247,9 +247,7 @@ def _tensor(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
     """
     cfg_bool_mtx = BoolMatrixAutomaton.from_rsm(ECFG.from_cfg(cfg).to_rsm())
     cfg_idx_to_state = {i: s for s, i in cfg_bool_mtx.state_to_idx.items()}
-    graph_bool_mtx = BoolMatrixAutomaton.from_nfa(
-        EpsilonNFA.from_networkx(graph),
-    )
+    graph_bool_mtx = BoolMatrixAutomaton.from_nfa(EpsilonNFA.from_networkx(graph))
     graph_bool_mtx_states_sz = len(graph_bool_mtx.state_to_idx)
     graph_idx_to_state = {i: s for s, i in graph_bool_mtx.state_to_idx.items()}
     self_loop_mtx = eye(len(graph_bool_mtx.state_to_idx), dtype=bool).todok()
