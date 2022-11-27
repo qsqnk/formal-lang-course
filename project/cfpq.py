@@ -1,4 +1,3 @@
-import time
 from collections import defaultdict, deque
 from enum import Enum, auto
 from typing import Tuple, Set, Any, Union, Collection, Dict, List
@@ -7,7 +6,6 @@ from pyformlang.cfg import CFG, Variable, Terminal, Production
 from pyformlang.finite_automaton import EpsilonNFA
 from scipy.sparse import dok_matrix, eye
 
-from project.automata import graph_to_epsilon_nfa
 from project.ecfg import ECFG
 from project.matrix_utils import BoolMatrixAutomaton
 from project.graph_utils import load_graph
