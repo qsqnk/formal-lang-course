@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Dict, Set, Any, List
 
 from pyformlang.finite_automaton import State, EpsilonNFA
@@ -125,13 +126,11 @@ class BoolMatrixAutomaton:
                     final_states.add(state)
         states = sorted(states, key=lambda s: s.value)
         state_to_idx = {s: i for i, s in enumerate(states)}
-        b_mtx = {}
+        b_mtx = defaultdict(lambda: dok_matrix((len(states), len(states)), dtype=bool))
         for nonterm, dfa in rsm.boxes.items():
             for state_from, transitions in dfa.to_dict().items():
                 for label, states_to in transitions.items():
-                    mtx = b_mtx.setdefault(
-                        label.value, dok_matrix((len(states), len(states)), dtype=bool)
-                    )
+                    mtx = b_mtx[label.value]
                     states_to = states_to if isinstance(states_to, set) else {states_to}
                     for state_to in states_to:
                         mtx[
@@ -212,7 +211,9 @@ class BoolMatrixAutomaton:
         b_mtx : Dict[State, int]
             Mapping from labels to adj bool matrix
         """
-        b_mtx = dict()
+        b_mtx = defaultdict(
+            lambda: dok_matrix((len(nfa.states), len(nfa.states)), dtype=bool)
+        )
         state_from_to_transition = nfa.to_dict()
         for label in nfa.symbols:
             dok_mtx = dok_matrix((len(nfa.states), len(nfa.states)), dtype=bool)
