@@ -24,10 +24,13 @@ class CFPQAlgorithm(Enum):
         Hellings algorithm
     MATRIX : CFPQAlgorithm
         Matrix algorithm that is based on sparse matrix multiplication
+    TENSOR: CFPQAlgorithm
+        Tensor algorithm that is based on Kronecker product of sparse matrices
     """
 
     HELLINGS = auto()
     MATRIX = auto()
+    TENSOR = auto()
 
 
 def cfpq(
@@ -74,9 +77,11 @@ def cfpq(
     if not final_nodes:
         final_nodes = graph.nodes
 
-    result = {CFPQAlgorithm.HELLINGS: _hellings, CFPQAlgorithm.MATRIX: _matrix}[algo](
-        cfg, graph
-    )
+    result = {
+        CFPQAlgorithm.HELLINGS: _hellings,
+        CFPQAlgorithm.MATRIX: _matrix,
+        CFPQAlgorithm.TENSOR: _tensor,
+    }[algo](cfg, graph)
 
     return {
         (i, j)
@@ -207,6 +212,30 @@ def _matrix(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
         for nonterm, mtx in nonterm_to_mtx.items()
         for i, j in zip(*mtx.nonzero())
     )
+
+
+def _tensor(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
+    """Runs Tensor algorithm on given context-free grammar and graph
+    in order to get triples, where the first element is the first vertex,
+    the second element is a non-terminal, and the third element is the second vertex
+    for which there is a path in the graph between these vertices derived from this non-terminal
+    from given context-free grammar
+
+      Parameters
+      ----------
+      cfg : CFG
+          Context-free grammar
+
+      graph : MultiDiGraph
+          Graph
+
+      Returns
+      -------
+      result: Set[Tuple[Any, Variable, Any]]
+          Triples of vertices between which there is a path with specified constraints
+          and a non-terminal from which the path is derived
+    """
+    return
 
 
 def _convert_wcnf_prods(

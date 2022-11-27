@@ -7,6 +7,8 @@ __all__ = [
     "BoolMatrixAutomaton",
 ]
 
+from project.rsm import RSM
+
 
 class BoolMatrixAutomaton:
     # Only for internal use
@@ -97,6 +99,51 @@ class BoolMatrixAutomaton:
             transitive_closure += transitive_closure @ transitive_closure
             prev_nnz, cur_nnz = cur_nnz, transitive_closure.nnz
         return transitive_closure
+
+    @classmethod
+    def from_rsm(cls, rsm: RSM) -> "BoolMatrixAutomaton":
+        """Builds bool matrix from RSM
+
+        Parameters
+        ----------
+        rsm : RSM
+            RSM to be converted to bool matrix
+
+        Returns
+        -------
+        bool_matrix : BoolMatrixAutomaton
+            Bool matrix representation of RSM
+        """
+        states, start_states, final_states = set(), set(), set()
+        for nonterm, dfa in rsm.boxes.items():
+            for s in dfa.states:
+                state = State((nonterm, s.value))
+                states.add(state)
+                if s in dfa.start_states:
+                    start_states.add(state)
+                if s in dfa.final_states:
+                    final_states.add(state)
+        states = sorted(states, key=lambda s: s.value)
+        state_to_idx = {s: i for i, s in enumerate(states)}
+        b_mtx = {}
+        for nonterm, dfa in rsm.boxes.items():
+            for state_from, transitions in dfa.to_dict().items():
+                for label, states_to in transitions.items():
+                    mtx = b_mtx.setdefault(
+                        label.value, dok_matrix((len(states), len(states)), dtype=bool)
+                    )
+                    states_to = states_to if isinstance(states_to, set) else {states_to}
+                    for state_to in states_to:
+                        mtx[
+                            state_to_idx[State((nonterm, state_from.value))],
+                            state_to_idx[State((nonterm, state_to.value))],
+                        ] = True
+        return cls(
+            state_to_idx=state_to_idx,
+            start_states=start_states,
+            final_states=final_states,
+            b_mtx=b_mtx,
+        )
 
     @classmethod
     def from_nfa(cls, nfa: EpsilonNFA) -> "BoolMatrixAutomaton":
