@@ -148,5 +148,5 @@ class ECFG(NamedTuple):
         return (
             reduce(Regex.concatenate, [Regex(o.value) for o in body])
             if body
-            else Regex("")
+            else Regex("$")
         )

@@ -3,8 +3,11 @@ from enum import Enum, auto
 from typing import Tuple, Set, Any, Union, Collection, Dict, List
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG, Variable, Terminal, Production
-from scipy.sparse import dok_matrix
+from pyformlang.finite_automaton import EpsilonNFA
+from scipy.sparse import dok_matrix, eye
 
+from project.ecfg import ECFG
+from project.matrix_utils import BoolMatrixAutomaton
 from project.graph_utils import load_graph
 from project.cfg_utils import cfg_to_wcnf, cfg_from_file
 
@@ -24,10 +27,13 @@ class CFPQAlgorithm(Enum):
         Hellings algorithm
     MATRIX : CFPQAlgorithm
         Matrix algorithm that is based on sparse matrix multiplication
+    TENSOR: CFPQAlgorithm
+        Tensor algorithm that is based on Kronecker product of sparse matrices
     """
 
     HELLINGS = auto()
     MATRIX = auto()
+    TENSOR = auto()
 
 
 def cfpq(
@@ -73,10 +79,17 @@ def cfpq(
         start_nodes = graph.nodes
     if not final_nodes:
         final_nodes = graph.nodes
+    for node, data in graph.nodes(data=True):
+        if node in start_nodes:
+            data["is_start"] = True
+        if node in final_nodes:
+            data["is_final"] = True
 
-    result = {CFPQAlgorithm.HELLINGS: _hellings, CFPQAlgorithm.MATRIX: _matrix}[algo](
-        cfg, graph
-    )
+    result = {
+        CFPQAlgorithm.HELLINGS: _hellings,
+        CFPQAlgorithm.MATRIX: _matrix,
+        CFPQAlgorithm.TENSOR: _tensor,
+    }[algo](cfg, graph)
 
     return {
         (i, j)
@@ -207,6 +220,62 @@ def _matrix(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
         for nonterm, mtx in nonterm_to_mtx.items()
         for i, j in zip(*mtx.nonzero())
     )
+
+
+def _tensor(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
+    """Runs Tensor algorithm on given context-free grammar and graph
+    in order to get triples, where the first element is the first vertex,
+    the second element is a non-terminal, and the third element is the second vertex
+    for which there is a path in the graph between these vertices derived from this non-terminal
+    from given context-free grammar
+
+      Parameters
+      ----------
+      cfg : CFG
+          Context-free grammar
+
+      graph : MultiDiGraph
+          Graph
+
+      Returns
+      -------
+      result: Set[Tuple[Any, Variable, Any]]
+          Triples of vertices between which there is a path with specified constraints
+          and a non-terminal from which the path is derived
+    """
+    cfg_bool_mtx = BoolMatrixAutomaton.from_rsm(ECFG.from_cfg(cfg).to_rsm())
+    cfg_idx_to_state = {i: s for s, i in cfg_bool_mtx.state_to_idx.items()}
+    graph_bool_mtx = BoolMatrixAutomaton.from_nfa(EpsilonNFA.from_networkx(graph))
+    graph_bool_mtx_states_sz = len(graph_bool_mtx.state_to_idx)
+    graph_idx_to_state = {i: s for s, i in graph_bool_mtx.state_to_idx.items()}
+    self_loop_mtx = eye(len(graph_bool_mtx.state_to_idx), dtype=bool).todok()
+    for nonterm in cfg.get_nullable_symbols():
+        graph_bool_mtx.b_mtx[nonterm.value] += self_loop_mtx
+    last_tc_sz = 0
+    while True:
+        intersection = cfg_bool_mtx & graph_bool_mtx
+        tc_indices = list(zip(*intersection.transitive_closure().nonzero()))
+        if len(tc_indices) == last_tc_sz:
+            break
+        last_tc_sz = len(tc_indices)
+        for i, j in tc_indices:
+            cfg_i, cfg_j = i // graph_bool_mtx_states_sz, j // graph_bool_mtx_states_sz
+            graph_i, graph_j = (
+                i % graph_bool_mtx_states_sz,
+                j % graph_bool_mtx_states_sz,
+            )
+            state_from, state_to = cfg_idx_to_state[cfg_i], cfg_idx_to_state[cfg_j]
+            nonterm, _ = state_from.value
+            if (
+                state_from in cfg_bool_mtx.start_states
+                and state_to in cfg_bool_mtx.final_states
+            ):
+                graph_bool_mtx.b_mtx[nonterm][graph_i, graph_j] = True
+    return {
+        (graph_idx_to_state[graph_i], nonterm, graph_idx_to_state[graph_j])
+        for nonterm, mtx in graph_bool_mtx.b_mtx.items()
+        for graph_i, graph_j in zip(*mtx.nonzero())
+    }
 
 
 def _convert_wcnf_prods(
