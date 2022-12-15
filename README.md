@@ -231,7 +231,7 @@ VERTICES_PAIR ->
 
 EDGE ->
     VAR
-    | (INT, VAL, INT)
+    | (INT, LABEL, INT)
 
 EDGES ->
     VAR
@@ -257,7 +257,7 @@ BOOL_EXPR ->
     | BOOL_EXPR and BOOL_EXPR
     | not BOOL_EXPR
     | BOOL
-    | has_label(EDGE, " STR ")
+    | has_label(EDGE, LABEL)
     | is_start(VERTEX)
     | is_final(VERTEX)
     | VERTEX in VERTICES
