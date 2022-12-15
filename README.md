@@ -148,17 +148,17 @@ expr =
   | Smb of expr                  // единичный переход
 
 lambda =
-    Lambda of List<var> * expr 
+    Lambda of List<var> * expr
 ```
 
 ### Описание конкретного синтаксиса языка
 
 ```
-PROGRAM -> 
+PROGRAM ->
     STMT ; PROGRAM
     | eps
-    
-STMT -> 
+
+STMT ->
     VAR = EXPR
     | PRINT(EXPR)
 
@@ -166,11 +166,11 @@ LOWERCASE -> [a-z]
 UPPERCASE -> [A-Z]
 
 DIGIT -> [0-9]
-INT -> 
+INT ->
     [1-9] DIGIT*
-    | 0 
-BOOL -> 
-    true 
+    | 0
+BOOL ->
+    true
     | false
 
 STR -> (_ | . | LOWERCASE | UPPERCASE) (_ | . | LOWERCASE | UPPERCASE | DIGIT)*
@@ -181,8 +181,8 @@ VAL ->
     INT
     | " STR "
     | BOOL
-    
-EXPR -> 
+
+EXPR ->
     VAR
     | VAL
     | GRAPH
@@ -195,10 +195,10 @@ EXPR ->
     | LABELS
     | FILTER
     | MAP
-    
+
 FILTER = filter(LAMBDA, EXPR)
 MAP = map(LAMBDA, EXPR)
-    
+
 GRAPH ->
     VAR
     | symbol(VAL)
@@ -211,12 +211,12 @@ GRAPH ->
     | concat(GRAPH, GRAPH)
     | union(GRAPH, GRAPH)
     | star(GRAPH, GRAPH)
-    
+
 VERTEX -> VAR | INT
-    
+
 VERTICES ->
     VAR
-    | SET<VERTEX> 
+    | SET<VERTEX>
     | range ( INT , INT )
     | get_start(GRAPH)
     | get_final(GRAPH)
@@ -229,28 +229,28 @@ VERTICES_PAIR ->
     | SET<(INT, INT)>
     | get_reachable(GRAPH)
 
-EDGE -> 
+EDGE ->
     VAR
     | (INT, VAL, INT)
 
-EDGES -> 
+EDGES ->
     VAR
     | SET<EDGE>
     | get_edges(GRAPH)
     | FILTER
     | MAP
-    
+
 LABEL ->
     VAR
     | VAL
 
-LABELS -> 
+LABELS ->
     VAR
     | SET<LABEL>
     | get_labels(GRAPH)
     | FILTER
     | MAP
-    
+
 BOOL_EXPR ->
     VAR
     | BOOL_EXPR or BOOL_EXPR
@@ -264,7 +264,7 @@ BOOL_EXPR ->
     | LABEL in LABELS
 
 LAMBDA -> (LIST<VAR> -> [BOOL_EXPR | EXPR])
-    
+
 LIST<T> -> list(T [, T]*) | list()
 SET<T> -> set(T [, T]*) | set()
 ```
