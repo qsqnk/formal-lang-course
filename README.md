@@ -108,3 +108,178 @@
 - Вадим Абзалов [@vdshk](https://github.com/vdshk)
 - Рустам Азимов [@rustam-azimov](https://github.com/rustam-azimov)
 - Екатерина Шеметова [@katyacyfra](https://github.com/katyacyfra)
+
+## Язык запросов к графам
+
+### Описание абстрактного синтаксиса языка
+
+```
+prog = List<stmt>
+
+stmt =
+    bind of var * expr
+  | print of expr
+
+val =
+    String of string
+  | Int of int
+  | Bool of bool
+
+expr =
+    Var of var                   // переменные
+  | Val of val                   // константы
+  | Set_start of Set<val> * expr // задать множество стартовых состояний
+  | Set_final of Set<val> * expr // задать множество финальных состояний
+  | Add_start of Set<val> * expr // добавить состояния в множество стартовых
+  | Add_final of Set<val> * expr // добавить состояния в множество финальных
+  | Get_start of expr            // получить множество стартовых состояний
+  | Get_final of expr            // получить множество финальных состояний
+  | Get_reachable of expr        // получить все пары достижимых вершин
+  | Get_vertices of expr         // получить все вершины
+  | Get_edges of expr            // получить все рёбра
+  | Get_labels of expr           // получить все метки
+  | Map of lambda * expr         // классический map
+  | Filter of lambda * expr      // классический filter
+  | Load of path                 // загрузка графа
+  | Intersect of expr * expr     // пересечение языков
+  | Concat of expr * expr        // конкатенация языков
+  | Union of expr * expr         // объединение языков
+  | Star of expr                 // замыкание языков (звезда Клини)
+  | Smb of expr                  // единичный переход
+
+lambda =
+    Lambda of List<var> * expr 
+```
+
+### Описание конкретного синтаксиса языка
+
+```
+PROGRAM -> 
+    STMT ; PROGRAM
+    | eps
+    
+STMT -> 
+    VAR = EXPR
+    | PRINT(EXPR)
+
+LOWERCASE -> [a-z]
+UPPERCASE -> [A-Z]
+
+DIGIT -> [0-9]
+INT -> 
+    [1-9] DIGIT*
+    | 0 
+BOOL -> 
+    true 
+    | false
+
+STR -> (_ | . | LOWERCASE | UPPERCASE) (_ | . | LOWERCASE | UPPERCASE | DIGIT)*
+PATH -> " (/ | _ | . | LOWERCASE | UPPERCASE | DIGIT)+ "
+
+VAR -> STR
+VAL ->
+    INT
+    | " STR "
+    | BOOL
+    
+EXPR -> 
+    VAR
+    | VAL
+    | GRAPH
+    | VERTEX
+    | VERTICES
+    | VERTICES_PAIR
+    | EDGE
+    | EDGES
+    | LABEL
+    | LABELS
+    | FILTER
+    | MAP
+    
+FILTER = filter(LAMBDA, EXPR)
+MAP = map(LAMBDA, EXPR)
+    
+GRAPH ->
+    VAR
+    | symbol(VAL)
+    | load(PATH)
+    | set_start(VERTICES, GRAPH)
+    | set_final(VERTICES, GRAPH)
+    | add_start(VERTICES, GRAPH)
+    | add_final(VERTICES, GRAPH)
+    | intersect(GRAPH, GRAPH)
+    | concat(GRAPH, GRAPH)
+    | union(GRAPH, GRAPH)
+    | star(GRAPH, GRAPH)
+    
+VERTEX -> VAR | INT
+    
+VERTICES ->
+    VAR
+    | SET<VERTEX> 
+    | range ( INT , INT )
+    | get_start(GRAPH)
+    | get_final(GRAPH)
+    | get_vertices(GRAPH)
+    | FILTER
+    | MAP
+
+VERTICES_PAIR ->
+    VAR
+    | SET<(INT, INT)>
+    | get_reachable(GRAPH)
+
+EDGE -> 
+    VAR
+    | (INT, VAL, INT)
+
+EDGES -> 
+    VAR
+    | SET<EDGE>
+    | get_edges(GRAPH)
+    | FILTER
+    | MAP
+    
+LABEL ->
+    VAR
+    | VAL
+
+LABELS -> 
+    VAR
+    | SET<LABEL>
+    | get_labels(GRAPH)
+    | FILTER
+    | MAP
+    
+BOOL_EXPR ->
+    VAR
+    | BOOL_EXPR or BOOL_EXPR
+    | BOOL_EXPR and BOOL_EXPR
+    | not BOOL_EXPR
+    | BOOL
+    | has_label(EDGE, " STR ")
+    | is_start(VERTEX)
+    | is_final(VERTEX)
+    | VERTEX in VERTICES
+    | LABEL in LABELS
+
+LAMBDA -> (LIST<VAR> -> [BOOL_EXPR | EXPR])
+    
+LIST<T> -> list(T [, T]*) | list()
+SET<T> -> set(T [, T]*) | set()
+```
+
+### Пример программы
+
+```
+raw_graph = load("some_graph");
+vertices = get_vertices(raw);
+
+raw_graph_1 = set_start(vertices, raw_graph);
+raw_graph_2 = set_final(filter((v -> v in vertices), range(1, 10)), raw_graph_1);
+
+ready_graph = raw_graph_2;
+query = star(concat(symbol("abc"), star(symbol("def"))));
+
+print(intersect(ready_graph, query));
+```
