@@ -146,6 +146,7 @@ expr =
   | Union of expr * expr         // объединение языков
   | Star of expr                 // замыкание языков (звезда Клини)
   | Smb of expr                  // единичный переход
+  | Cfg of str                   // КС-грамматика
 
 lambda =
     Lambda of List<var> * expr
@@ -186,6 +187,8 @@ EXPR ->
     VAR
     | VAL
     | GRAPH
+    | FILTER
+    | MAP
     | VERTEX
     | VERTICES
     | VERTICES_PAIR
@@ -193,11 +196,11 @@ EXPR ->
     | EDGES
     | LABEL
     | LABELS
-    | FILTER
-    | MAP
 
 FILTER = filter(LAMBDA, EXPR)
 MAP = map(LAMBDA, EXPR)
+
+CFG_STR -> (LOWERCASE | UPPERCASE | ' ' | '\n' | '->' )*
 
 GRAPH ->
     VAR
@@ -211,6 +214,7 @@ GRAPH ->
     | concat(GRAPH, GRAPH)
     | union(GRAPH, GRAPH)
     | star(GRAPH, GRAPH)
+    | cfg(" CFG_STR ")
 
 VERTEX -> VAR | INT
 
