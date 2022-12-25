@@ -33,7 +33,8 @@ jobs:
           pip install antlr4-tools
 
       - name: Generate parser
-        working_directory: project/gql
+        with:
+          working_directory: project/gql
         run: antlr4 GQL.g4 -Dlanguage=Python3
 
       - name: Run tests
